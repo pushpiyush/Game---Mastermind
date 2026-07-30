@@ -48,7 +48,7 @@ int main(void)
         }
 
         // if it's the last allowed guess
-        if (i == ALLOWED_GUESS - 1)
+        else if (i == ALLOWED_GUESS - 1)
         {
             printf("You have made all %d guesses and could not guess the key.\n", ALLOWED_GUESS);
             printf("The key is: %d\n", key);
