@@ -3,33 +3,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
+// structure to store history of each guess
+typedef struct
+{
     int guess;
     int exist;
     int position;
 } try;
 
+// functions declaration
 bool valid_key(int key);
 int get_key(char *prompt);
 void update_try(int guess, int key, int i, try *pointer[]);
 void free_memory(try *pointer[]);
 
+// game constant
 int ALLOWED_GUESS = 12;
 int KEY_LENGTH = 4;
 
 // main function
 int main(void)
 {
+    // get the key from user initially
     int key = get_key("Key");
 
-    int exist = 0;
-    int position = 0;
+    // array of pointer to store history
     try *pointer[ALLOWED_GUESS];
 
     for (int i = 0; i < ALLOWED_GUESS; i++)
     {
+        // get the guess value from user
         int guess = get_key("Guess");
-        
+
+        // update and print the history
+        update_try(guess, key, i, pointer);
+
+        // if it's correct guess
         if (guess == key)
         {
             printf("You guessed the key: %d\n", key);
@@ -38,8 +47,15 @@ int main(void)
             break;
         }
 
-        update_try(guess, key, i, pointer);
+        // if it's the last allowed guess
+        if (i == ALLOWED_GUESS - 1)
+        {
+            printf("You have made all %d guesses and could not guess the key.\n", ALLOWED_GUESS);
+            printf("The key is: %d\n", key);
+            free_memory(pointer);
+        }
 
+        printf("\n");
     }
 
     return 0;
@@ -53,6 +69,7 @@ int get_key(char *prompt)
 
     while (true)
     {
+        // get user's input
         printf("%s: ", prompt);
         if (fgets(buffer, sizeof(buffer), stdin) == NULL)
         {
@@ -60,6 +77,9 @@ int get_key(char *prompt)
         }
         if (sscanf(buffer, "%d", &key) <= 0)
         {
+            // if the input does not starts with number
+            // TODO
+            printf("****contains non-numbers, try again\n\n");
             continue;
         }
 
@@ -77,6 +97,7 @@ bool valid_key(int key)
     // if the key has not exactly 4 digit
     if (!(key >= 1000 && key <= 9999))
     {
+        printf("****guess must have length of 4, try again\n\n");
         return false;
     }
 
@@ -101,6 +122,7 @@ bool valid_key(int key)
         {
             if (current_dig - digits[j] == 0)
             {
+                printf("****no repeated digits, try again\n\n");
                 return false;
             }
         }
@@ -109,14 +131,17 @@ bool valid_key(int key)
     return true;
 }
 
+// function to update the pointer array of history
 void update_try(int guess, int key, int guess_count, try *pointer[])
 {
     int exist = 0;
     int position = 0;
 
+    // array to store each digit of numbers
     int guess_digits[KEY_LENGTH];
     int key_digits[KEY_LENGTH];
 
+    // store each digit of the numbers in array
     for (int i = 0; i < KEY_LENGTH; i++)
     {
         int guess_digit = (guess % (int)pow(10, i + 1)) / pow(10, i);
@@ -127,8 +152,10 @@ void update_try(int guess, int key, int guess_count, try *pointer[])
 
     for (int i = 0; i < KEY_LENGTH; i++)
     {
+        // for each digit of guess
         for (int j = 0; j < KEY_LENGTH; j++)
         {
+            // for each digit of key
             if (guess_digits[i] == key_digits[j])
             {
                 exist++;
@@ -137,7 +164,7 @@ void update_try(int guess, int key, int guess_count, try *pointer[])
                     position++;
                 }
             }
-        }   
+        }
     }
 
     // update the pointer
@@ -151,10 +178,9 @@ void update_try(int guess, int key, int guess_count, try *pointer[])
     {
         printf("%d : exist:%d, position:%d\n", pointer[i]->guess, pointer[i]->exist, pointer[i]->position);
     }
-
-    printf("\n");
 }
 
+// free the allocated memory from pointer
 void free_memory(try *pointer[])
 {
     for (int i = 0; i < ALLOWED_GUESS; i++)
