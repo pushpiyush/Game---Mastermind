@@ -47,5 +47,3 @@ This is a simple productivity-focused extension designed for faster keyboard-bas
 ## License
 
 This project is provided as-is for personal use.
-
-If you want, I can also rewrite this into a more polished GitHub README with a screenshot section and installation instructions for Chrome and Edge.
